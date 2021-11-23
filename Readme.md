@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Юлия Щинова](https://up.htmlacademy.ru/ecmascript/16/user/967159).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Лепёшкин](https://htmlacademy.ru/profile/id144641).
 
 ---
 
