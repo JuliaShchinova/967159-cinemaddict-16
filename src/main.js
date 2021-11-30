@@ -11,8 +11,6 @@ import { createMainNavTemplate } from './view/main-nav-view';
 import { createPopupTemplate } from './view/popup-view';
 import { createProfileTemplate } from './view/profile-view';
 import { createShowMoreButtonTemplate } from './view/show-more-button-view';
-import { createStatiisticTemplate } from './view/statistic-view';
-
 
 const comments = Array.from({length: COMMENT_COUNT}, generateCommentInfo);
 const films = [];
@@ -66,8 +64,6 @@ if (films.length > CARD_COUNT_PER_STEP) {
   });
 }
 
-renderTemplate(siteMainElement, createStatiisticTemplate(), RenderPosition.BEFOREEND);
-
 renderTemplate(document.body, createPopupTemplate(films[0], comments), RenderPosition.BEFOREEND);
 
 const filmDelails = document.querySelector('.film-details');
@@ -78,5 +74,5 @@ if (filmDelails) {
 }
 
 const footerStatisticElement = document.querySelector('.footer__statistics');
-renderTemplate(footerStatisticElement, createFooterStatisticTemplate(),  RenderPosition.BEFOREEND);
+renderTemplate(footerStatisticElement, createFooterStatisticTemplate(films.length),  RenderPosition.BEFOREEND);
 

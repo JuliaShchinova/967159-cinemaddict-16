@@ -52,10 +52,13 @@ const getDurationTime = (time, type) => {
   return `${hours}h ${minutes}m`;
 };
 
-function addActiveClass (active) {
-  return function (detail) {
-    return detail ? active : '';
+const addActiveClass = (active) => {
+  const checkDetail = (detail) => {
+    const className = detail ? active : '';
+    return className;
   };
-}
+
+  return checkDetail;
+};
 
 export { getRandomInteger, getRandomWithFloat, getRandomArray, generateDate, getDurationTime, getFormatDate, addActiveClass };
