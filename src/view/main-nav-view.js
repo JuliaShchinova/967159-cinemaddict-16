@@ -1,7 +1,9 @@
+import { createElement } from '../render';
+
 const createFilterItemTemplate = (filters) => {
   const {name, count} = filters;
 
-  const allMoviesTemplate = () => `<a href="#all" class="main-navigation__item">${name}</a>`;
+  const allMoviesTemplate = () => `<a href="#all" class="main-navigation__item main-navigation__item--active">${name}</a>`;
 
   return name === 'All movies' ?
     allMoviesTemplate() :
@@ -10,19 +12,38 @@ const createFilterItemTemplate = (filters) => {
     </a>`;
 };
 
-export const createMainNavTemplate = (filterItems) => {
+const createMainNavTemplate = (filterItems) => {
   const filterItemsTemplate = filterItems.map((filter, index) => createFilterItemTemplate(filter, index === 0)).join('');
 
   return `<nav class="main-navigation">
     <div class="main-navigation__items">
       ${filterItemsTemplate}
     </div>
-      <a href="#stats" class="main-navigation__additional main-navigation__additional--active">Stats</a>
-  </nav>
-
-  <ul class="sort">
-    <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-    <li><a href="#" class="sort__button">Sort by date</a></li>
-    <li><a href="#" class="sort__button">Sort by rating</a></li>
-  </ul>`;
+      <a href="#stats" class="main-navigation__additional">Stats</a>
+  </nav>`;
 };
+
+export default class MainNavView {
+  #element = null;
+  #filters = null;
+
+  constructor(filters) {
+    this.#filters = filters;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMainNavTemplate(this.#filters);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

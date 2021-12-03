@@ -1,6 +1,7 @@
+import { createElement } from '../render';
 import { getFormatDate } from '../utils/utils';
 
-export const createCommentItemTemplate = (comment = {}) => {
+const createCommentItemTemplate = (comment = {}) => {
   const {author, text, date, emotion} = comment;
 
   return `<li class="film-details__comment">
@@ -17,3 +18,30 @@ export const createCommentItemTemplate = (comment = {}) => {
     </div>
   </li>`;
 };
+
+export default class CommentView {
+  #element = null;
+  #comment = null;
+
+  constructor(comment) {
+    this.#comment = comment;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createCommentItemTemplate(this.#comment);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
+

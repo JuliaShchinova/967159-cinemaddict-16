@@ -1,7 +1,8 @@
 import { MAX_DESCRIPTION_LENGTH, TEXT_LENGTH } from '../const';
+import { createElement } from '../render';
 import { addActiveClass, getDurationTime, getFormatDate } from '../utils/utils';
 
-export const createFilmCardTemplate = (film) => {
+const createFilmCardTemplate = (film) => {
   const {title, totalRating, poster, comments, release, description, runtime, genres, userDetails} = film;
 
   const text = description.length < MAX_DESCRIPTION_LENGTH ? description : `${description.slice(0, TEXT_LENGTH)}...`;
@@ -28,3 +29,35 @@ export const createFilmCardTemplate = (film) => {
     </div>
   </article>`;
 };
+
+export default class FilmCardView {
+  #element = null;
+  #film = null;
+  #link = null;
+
+  constructor(film) {
+    this.#film = film;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmCardTemplate(this.#film);
+  }
+
+  get link () {
+    this.#link = this.element.querySelector('.film-card__link');
+
+    return this.#link;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
