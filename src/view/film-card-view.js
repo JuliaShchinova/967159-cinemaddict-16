@@ -1,13 +1,13 @@
 import { MAX_DESCRIPTION_LENGTH, TEXT_LENGTH } from '../const';
 import { createElement } from '../render';
-import { addActiveClass, getDurationTime, getFormatDate } from '../utils/utils';
+import { addClass, getDurationTime, getFormatDate } from '../utils/utils';
 
 const createFilmCardTemplate = (film) => {
   const {title, totalRating, poster, comments, release, description, runtime, genres, userDetails} = film;
 
   const text = description.length < MAX_DESCRIPTION_LENGTH ? description : `${description.slice(0, TEXT_LENGTH)}...`;
 
-  const addFilmCardActiveClass = addActiveClass('film-card__controls-item--active');
+  const addFilmCardActiveClass = addClass('film-card__controls-item--active');
 
   return `<article class="film-card">
     <a class="film-card__link">

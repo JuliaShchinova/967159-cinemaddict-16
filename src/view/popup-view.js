@@ -1,5 +1,5 @@
 import { createElement, render, RenderPosition } from '../render';
-import { addActiveClass, getDurationTime, getFormatDate } from '../utils/utils';
+import { addClass, getDurationTime, getFormatDate } from '../utils/utils';
 import CommentView from './comment-view';
 
 const createPopupTemplate = (film = {}) => {
@@ -9,7 +9,7 @@ const createPopupTemplate = (film = {}) => {
 
   const getGenresList = (genresList) => genresList.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-  const addFilmDetaisActiveClass = addActiveClass('film-details__control-button--active');
+  const addFilmDetaisActiveClass = addClass('film-details__control-button--active');
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
