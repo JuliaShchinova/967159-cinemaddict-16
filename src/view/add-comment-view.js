@@ -1,4 +1,6 @@
-export const addCommentTemplate = () => (
+import { createElement } from '../render';
+
+const addCommentTemplate = () => (
   `<div class="film-details__new-comment">
     <div class="film-details__add-emoji-label"></div>
 
@@ -29,3 +31,23 @@ export const addCommentTemplate = () => (
     </div>
   </div>`
 );
+
+export default class AddCommentView {
+  #element = null;
+
+  get element () {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template () {
+    return addCommentTemplate();
+  }
+
+  removeElement () {
+    this.#element = null;
+  }
+}

@@ -1,26 +1,15 @@
-import { addActiveClass, getDurationTime, getFormatDate } from '../utils/utils';
-import { addCommentTemplate } from './add-comment-view';
-import { createCommentItemTemplate } from './comment-view';
+import { createElement, render, RenderPosition } from '../render';
+import { addClass, getDurationTime, getFormatDate } from '../utils/utils';
+import CommentView from './comment-view';
 
-export const createPopupTemplate = (film = {}, allComments = []) => {
+const createPopupTemplate = (film = {}) => {
   const {title, alternativeTitle, totalRating, ageRating, poster, director, writers, actors, comments, release, description, runtime, genres, userDetails} = film;
 
   const genresTitle = genres.length > 1 ? 'Genres' : 'Genre';
 
   const getGenresList = (genresList) => genresList.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
-  const addFilmDetaisActiveClass = addActiveClass('film-details__control-button--active');
-
-  const createCommentsTemplate = () => {
-    const templates = [];
-
-    for (const commentId of comments) {
-      const comment = allComments.find((c) => commentId === c.id);
-      templates.push(createCommentItemTemplate(comment));
-    }
-
-    return templates.join('');
-  };
+  const addFilmDetaisActiveClass = addClass('film-details__control-button--active');
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -92,12 +81,58 @@ export const createPopupTemplate = (film = {}, allComments = []) => {
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
-          <ul class="film-details__comments-list">${createCommentsTemplate()}
+          <ul class="film-details__comments-list">
           </ul>
-
-          ${addCommentTemplate()}
         </section>
       </div>
     </form>
   </section>`;
 };
+
+export default class PopupView {
+  #element = null;
+  #film = null;
+  #comments = null;
+  #container = null;
+  #closeButton = null;
+
+  constructor(film, comments = []) {
+    this.#film = film;
+    this.#comments = [...comments];
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPopupTemplate(this.#film, this.#comments);
+  }
+
+  get container () {
+    this.#container = this.element.querySelector('.film-details__comments-list');
+
+    return this.#container;
+  }
+
+  get closeButton () {
+    this.#closeButton = this.element.querySelector('.film-details__close-btn');
+
+    return this.#closeButton;
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+
+  renderComments () {
+    for (const id of this.#film.comments) {
+      const comment = this.#comments.find((item) => id === item.id);
+      render(this.container , new CommentView(comment).element, RenderPosition.BEFOREEND);
+    }
+  }
+}

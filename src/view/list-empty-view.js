@@ -1,15 +1,13 @@
 import { createElement } from '../render';
 
-const createFooterStatisticTemplate = (count) => `<p>
-    ${count} movies inside </p>`;
+const createListEmptyTemplate = () => (
+  `<section class="films-list">
+    <h2 class="films-list__title">There are no movies in our database</h2>
+  </section>`
+);
 
-export default class FooterStatisticView {
+export default class ListEmptyView {
   #element = null;
-  #count = null;
-
-  constructor(count) {
-    this.#count = count;
-  }
 
   get element() {
     if (!this.#element) {
@@ -20,10 +18,11 @@ export default class FooterStatisticView {
   }
 
   get template() {
-    return createFooterStatisticTemplate(this.#count);
+    return createListEmptyTemplate();
   }
 
   removeElement() {
     this.#element = null;
   }
 }
+
