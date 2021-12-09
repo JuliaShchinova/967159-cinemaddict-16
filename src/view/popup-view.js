@@ -96,7 +96,6 @@ export default class PopupView extends AbstractView {
   #film = null;
   #comments = null;
   #container = null;
-  // #closeButton = null;
 
   constructor(film, comments = []) {
     super();
@@ -113,12 +112,6 @@ export default class PopupView extends AbstractView {
 
     return this.#container;
   }
-
-  // get closeButton () {
-  //   this.#closeButton = this.element.querySelector('.film-details__close-btn');
-
-  //   return this.#closeButton;
-  // }
 
   renderComments () {
     for (const id of this.#film.comments) {

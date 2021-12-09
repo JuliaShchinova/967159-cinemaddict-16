@@ -33,7 +33,6 @@ const createFilmCardTemplate = (film) => {
 
 export default class FilmCardView extends AbstractView {
   #film = null;
-  // #link = null;
 
   constructor(film) {
     super();
@@ -43,12 +42,6 @@ export default class FilmCardView extends AbstractView {
   get template() {
     return createFilmCardTemplate(this.#film);
   }
-
-  // get link () {
-  //   this.#link = this.element.querySelector('.film-card__link');
-
-  //   return this.#link;
-  // }
 
   setLinkClickHandler = (callback) => {
     this._callback.linkClick = callback;
