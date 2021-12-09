@@ -1,5 +1,8 @@
-import { createElement, render, RenderPosition } from '../render';
-import { addClass, getDurationTime, getFormatDate } from '../utils/utils';
+import { getDurationTime, getFormatDate } from '../utils/date';
+import { render, RenderPosition } from '../utils/render';
+import { addClass } from '../utils/utils';
+import AbstractView from './abstract-view';
+import AddCommentView from './add-comment-view';
 import CommentView from './comment-view';
 
 const createPopupTemplate = (film = {}) => {
@@ -89,24 +92,15 @@ const createPopupTemplate = (film = {}) => {
   </section>`;
 };
 
-export default class PopupView {
-  #element = null;
+export default class PopupView extends AbstractView {
   #film = null;
   #comments = null;
   #container = null;
-  #closeButton = null;
 
   constructor(film, comments = []) {
+    super();
     this.#film = film;
     this.#comments = [...comments];
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
@@ -119,20 +113,24 @@ export default class PopupView {
     return this.#container;
   }
 
-  get closeButton () {
-    this.#closeButton = this.element.querySelector('.film-details__close-btn');
-
-    return this.#closeButton;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
-
   renderComments () {
     for (const id of this.#film.comments) {
       const comment = this.#comments.find((item) => id === item.id);
-      render(this.container , new CommentView(comment).element, RenderPosition.BEFOREEND);
+      render(this.container, new CommentView(comment), RenderPosition.BEFOREEND);
     }
+  }
+
+  renderAddComment () {
+    render(this.container, new AddCommentView(), RenderPosition.AFTEREND);
+  }
+
+  setCloseClickHandler = (callback) => {
+    this._callback.closeClick = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
+  }
+
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeClick();
   }
 }
