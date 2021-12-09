@@ -1,5 +1,6 @@
-import { COMMENT_COUNT } from '../const';
-import { generateDate, getRandomArray, getRandomInteger } from '../utils/utils';
+import { COMMENT_COUNT } from '../utils/const';
+import { generateDate } from '../utils/date';
+import { getRandomArray, getRandomInteger } from '../utils/common';
 
 const generateId = () => {
   const numders = [];

@@ -1,6 +1,7 @@
-import { MAX_DESCRIPTION_LENGTH, TEXT_LENGTH } from '../const';
-import { createElement } from '../render';
-import { addClass, getDurationTime, getFormatDate } from '../utils/utils';
+import { MAX_DESCRIPTION_LENGTH, TEXT_LENGTH } from '../utils/const';
+import { getDurationTime, getFormatDate } from '../utils/date';
+import { addClass } from '../utils/utils';
+import AbstractView from './abstract-view';
 
 const createFilmCardTemplate = (film) => {
   const {title, totalRating, poster, comments, release, description, runtime, genres, userDetails} = film;
@@ -30,34 +31,32 @@ const createFilmCardTemplate = (film) => {
   </article>`;
 };
 
-export default class FilmCardView {
-  #element = null;
+export default class FilmCardView extends AbstractView {
   #film = null;
-  #link = null;
+  // #link = null;
 
   constructor(film) {
+    super();
     this.#film = film;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilmCardTemplate(this.#film);
   }
 
-  get link () {
-    this.#link = this.element.querySelector('.film-card__link');
+  // get link () {
+  //   this.#link = this.element.querySelector('.film-card__link');
 
-    return this.#link;
+  //   return this.#link;
+  // }
+
+  setLinkClickHandler = (callback) => {
+    this._callback.linkClick = callback;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#linkClickHandler);
   }
 
-  removeElement() {
-    this.#element = null;
+  #linkClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.linkClick();
   }
 }

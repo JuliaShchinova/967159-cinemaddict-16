@@ -1,5 +1,5 @@
-import { createElement } from '../render';
 import { addClass } from '../utils/utils';
+import AbstractView from './abstract-view';
 
 const createFilmsListTemplate = (header) => {
   let h2;
@@ -25,21 +25,13 @@ const createFilmsListTemplate = (header) => {
   </section>`;
 };
 
-export default class FilmsListView {
-  #element = null;
+export default class FilmsListView extends AbstractView {
   #container = null;
   #header = null
 
   constructor (header) {
+    super();
     this.#header = header;
-  }
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template () {
@@ -50,10 +42,6 @@ export default class FilmsListView {
     this.#container = this.element.querySelector('.films-list__container');
 
     return this.#container;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

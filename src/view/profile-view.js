@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from './abstract-view';
 
 const createProfileTemplate = (count) => {
   const raiting = {
@@ -28,27 +28,15 @@ const createProfileTemplate = (count) => {
   </section>`;
 };
 
-export default class ProfileView {
-  #element = null;
+export default class ProfileView extends AbstractView {
   #count = null;
 
   constructor (count) {
+    super();
     this.#count = count;
-  }
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template () {
     return createProfileTemplate(this.#count);
-  }
-
-  removeElement () {
-    this.#element = null;
   }
 }
