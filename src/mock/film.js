@@ -1,6 +1,7 @@
 import { ACTORS_MAX_COUNT, MAX_COUNT, MAX_RAITING, MIN_RANGE } from '../utils/const';
 import { generateDate } from '../utils/date';
 import { getRandomArray, getRandomInteger, getRandomWithFloat } from '../utils/common';
+import { nanoid } from 'nanoid';
 
 const generateTitle = () => {
   const titles = [
@@ -134,6 +135,7 @@ const generateUserDetails = () => ({
 
 
 export const generateFilmInfo = (loadedComments) => ({
+  id: nanoid(),
   title: generateTitle(),
   alternativeTitle: generateTitle(),
   totalRating: generateTotalRaiting(),

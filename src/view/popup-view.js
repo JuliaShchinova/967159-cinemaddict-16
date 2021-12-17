@@ -94,17 +94,18 @@ const createPopupTemplate = (film = {}) => {
 
 export default class PopupView extends AbstractView {
   #film = null;
-  #comments = null;
+  #filmComments = [];
   #container = null;
 
-  constructor(film, comments = []) {
+  constructor (film, filmComments) {
     super();
+
     this.#film = film;
-    this.#comments = [...comments];
+    this.#filmComments = [...filmComments];
   }
 
   get template() {
-    return createPopupTemplate(this.#film, this.#comments);
+    return createPopupTemplate(this.#film, this.#filmComments);
   }
 
   get container () {
@@ -113,15 +114,9 @@ export default class PopupView extends AbstractView {
     return this.#container;
   }
 
-  renderComments () {
-    for (const id of this.#film.comments) {
-      const comment = this.#comments.find((item) => id === item.id);
-      render(this.container, new CommentView(comment), RenderPosition.BEFOREEND);
-    }
-  }
-
-  renderAddComment () {
-    render(this.container, new AddCommentView(), RenderPosition.AFTEREND);
+  renderCommentInfo = () => {
+    this.#renderComments();
+    this.#renderAddComment();
   }
 
   setCloseClickHandler = (callback) => {
@@ -129,8 +124,49 @@ export default class PopupView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
   }
 
+  setIsInWatchlistClickHandler = (callback) => {
+    this._callback.inWatchListClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#isInWatchlistClickHandler);
+  }
+
+  setIsAlreadyWatchedClickHandler = (callback) => {
+    this._callback.alreadyWatchedClick = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#isAlreadyWatchedClickHandler);
+  }
+
+  setIsFavoritesClickHandler = (callback) => {
+    this._callback.favoritesClick = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#isFavoritesClickHandler);
+  }
+
   #closeClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.closeClick();
+  }
+
+  #isInWatchlistClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.inWatchListClick();
+  }
+
+  #isAlreadyWatchedClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.alreadyWatchedClick();
+  }
+
+  #isFavoritesClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoritesClick();
+  }
+
+  #renderComments = () => {
+    for (const id of this.#film.comments) {
+      const comment = this.#filmComments.find((item) => id === item.id);
+      render(this.container, new CommentView(comment), RenderPosition.BEFOREEND);
+    }
+  }
+
+  #renderAddComment = () => {
+    render(this.container, new AddCommentView(), RenderPosition.AFTEREND);
   }
 }
