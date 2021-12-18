@@ -5,6 +5,7 @@ import PopupView from '../view/popup-view';
 export default class FilmPresenter {
   #filmListContainer = null;
   #changeData = null;
+  #closePopup = null;
 
   #filmComponent = null;
   #popupComponent = null;
@@ -12,9 +13,10 @@ export default class FilmPresenter {
   #film = null;
   #comments = [];
 
-  constructor (filmListContainer, changeData) {
+  constructor (filmListContainer, changeData, closePopup) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
+    this.#closePopup = closePopup;
   }
 
   init = (film, comments) => {
@@ -57,10 +59,6 @@ export default class FilmPresenter {
   }
 
   #renderPopup = () => {
-    if (document.body.querySelector('.film-details')) {
-      document.body.querySelector('.film-details').remove();
-    }
-
     render(document.body, this.#popupComponent, RenderPosition.BEFOREEND);
     this.#popupComponent.renderCommentInfo();
     document.body.classList.add('hide-overflow');
@@ -87,7 +85,10 @@ export default class FilmPresenter {
   }
 
   #handleLinkClick = () => {
-    this.#renderPopup();
+    if (!document.body.contains(this.#popupComponent.element)) {
+      this.#closePopup();
+      this.#renderPopup();
+    }
   }
 
   #handleIsInWatchlistClick = () => {

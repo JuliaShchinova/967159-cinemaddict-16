@@ -29,6 +29,8 @@ export default class FilmsPresenter {
   #commentedFilms = [];
   #renderedCardCount = CARD_COUNT_PER_STEP;
   #filmPresenter = new Map();
+  #filmRatedPresenter = new Map();
+  #filmCommentedPresenter = new Map();
 
   #currentSortType = SortType.DEFAULT;
   #sourcedfilmCards = [];
@@ -66,27 +68,23 @@ export default class FilmsPresenter {
     render(this.#filmsComponent, this.#filmsListComponent, RenderPosition.BEFOREEND);
   }
 
-  #renderFilm = (filmListElement, film) => {
+  #renderFilm = (filmListElement, film, filmMap) => {
     const container = filmListElement.container ? filmListElement.container : filmListElement;
 
-    const filmPresenter = new FilmPresenter(container, this.#handleFilmChange);
+    const filmPresenter = new FilmPresenter(container, this.#handleFilmChange, this.#handleOpenPopup);
     filmPresenter.init(film, this.#filmComments);
 
-    if (filmListElement === this.#filmsListComponent) {
-      this.#filmPresenter.set(film.id, filmPresenter);
-    }
-
-    // this.#filmPresenter.set(film.id, filmPresenter);
+    filmMap.set(film.id, filmPresenter);
   }
 
-  #renderFilmCards = (cards, place, from, to) => {
+  #renderFilmCards = (cards, place, from, to, filmMap) => {
     cards
       .slice(from, to)
-      .forEach((film) => this.#renderFilm(place, film));
+      .forEach((film) => this.#renderFilm(place, film, filmMap));
   }
 
   #renderCardsList = () => {
-    this.#renderFilmCards(this.#filmCards, this.#filmsListComponent, 0, Math.min(this.#filmCards.length, CARD_COUNT_PER_STEP));
+    this.#renderFilmCards(this.#filmCards, this.#filmsListComponent, 0, Math.min(this.#filmCards.length, CARD_COUNT_PER_STEP), this.#filmPresenter);
 
     if (this.#filmCards.length > CARD_COUNT_PER_STEP) {
       this.#renderShowMoreButton();
@@ -106,14 +104,14 @@ export default class FilmsPresenter {
   #renderFilmsListRatedComponent = () => {
     if (this.#ratedFilms.length !== 0) {
       render(this.#filmsComponent, this.#filmsListRatedComponent, RenderPosition.BEFOREEND);
-      this.#renderFilmCards(this.#ratedFilms, this.#filmsListRatedComponent, 0, SORT_COUNT);
+      this.#renderFilmCards(this.#ratedFilms, this.#filmsListRatedComponent, 0, SORT_COUNT, this.#filmRatedPresenter);
     }
   }
 
   #renderFilmsListCommentedComponent = () => {
     if (this.#commentedFilms.length !== 0) {
       render(this.#filmsComponent, this.#filmsListCommentedComponent, RenderPosition.BEFOREEND);
-      this.#renderFilmCards(this.#commentedFilms, this.#filmsListCommentedComponent, 0, SORT_COUNT);
+      this.#renderFilmCards(this.#commentedFilms, this.#filmsListCommentedComponent, 0, SORT_COUNT, this.#filmCommentedPresenter);
     }
   }
 
@@ -152,8 +150,14 @@ export default class FilmsPresenter {
     this.#currentSortType = sortType;
   }
 
+  #handleOpenPopup = () => {
+    if (document.body.querySelector('.film-details')) {
+      document.body.querySelector('.film-details').remove();
+    }
+  }
+
   #handleShowMoreButtonClick = () => {
-    this.#renderFilmCards(this.#filmCards, this.#filmsListComponent, this.#renderedCardCount, this.#renderedCardCount + CARD_COUNT_PER_STEP);
+    this.#renderFilmCards(this.#filmCards, this.#filmsListComponent, this.#renderedCardCount, this.#renderedCardCount + CARD_COUNT_PER_STEP, this.#filmPresenter);
     this.#renderedCardCount += CARD_COUNT_PER_STEP;
 
     if (this.#renderedCardCount >= this.#filmCards.length) {
@@ -164,7 +168,18 @@ export default class FilmsPresenter {
   #handleFilmChange = (updatedFilm) => {
     this.#filmCards = updateItem(this.#filmCards, updatedFilm);
     this.#sourcedfilmCards = updateItem(this.#sourcedfilmCards, updatedFilm);
-    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmComments);
+
+    if (this.#filmPresenter.has(updatedFilm.id)) {
+      this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmComments);
+    }
+
+    if (this.#filmRatedPresenter.has(updatedFilm.id)) {
+      this.#filmRatedPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmComments);
+    }
+
+    if (this.#filmCommentedPresenter.has(updatedFilm.id)) {
+      this.#filmCommentedPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmComments);
+    }
   }
 
   #handleSortTypeChange = (sortType) => {
