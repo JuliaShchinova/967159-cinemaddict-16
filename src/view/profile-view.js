@@ -17,7 +17,7 @@ const createProfileTemplate = (count) => {
   };
 
   const defineRank = () => {
-    const rank = Object.keys(raiting).find((key) => count >= raiting[key].min && count < raiting[key].max);
+    const rank = Object.keys(raiting).find((key) => count >= raiting[key].min && count <= raiting[key].max);
 
     return rank;
   };
