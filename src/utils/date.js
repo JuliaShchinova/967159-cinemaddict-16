@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { getRandomInteger } from './common';
 
 dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 export const generateDate = (min, max) => {
   const year = getRandomInteger(min, max);
@@ -21,3 +23,5 @@ export const getDurationTime = (time, type) => {
 
   return `${hours}h ${minutes}m`;
 };
+
+export const getRelativeTimeFormat = (date) => dayjs(date).fromNow();

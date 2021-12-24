@@ -1,3 +1,4 @@
+import { ESC, ESCAPE } from '../utils/const';
 import { remove, render, RenderPosition, replace } from '../utils/render';
 import FilmCardView from '../view/film-card-view';
 import PopupView from '../view/popup-view';
@@ -45,8 +46,13 @@ export default class FilmPresenter {
     }
 
     if (document.body.contains(prevPopupComponent.element)) {
+      const scrollPosition = prevPopupComponent.element.scrollTop;
+
       replace(this.#popupComponent, prevPopupComponent);
       this.#popupComponent.renderCommentInfo();
+
+      this.#popupComponent.element.scrollTop = scrollPosition;
+
       this.#setPopupHandlers();
       remove(prevPopupComponent);
     }
@@ -140,7 +146,7 @@ export default class FilmPresenter {
   }
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (evt.key === ESCAPE || evt.key === ESC) {
       evt.preventDefault();
       this.#removePopup();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
