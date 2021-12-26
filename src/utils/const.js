@@ -14,4 +14,10 @@ const SortType = {
   BY_RAITING: 'by-rating',
 };
 
-export { CARD_COUNT, MAX_DESCRIPTION_LENGTH, TEXT_LENGTH, MAX_COUNT, MAX_RAITING, ACTORS_MAX_COUNT, MIN_RANGE, COMMENT_COUNT, SortType };
+const ESCAPE = 'Escape';
+const ESC = 'Esc';
+const ENTER = 'Enter';
+
+const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
+
+export { CARD_COUNT, MAX_DESCRIPTION_LENGTH, TEXT_LENGTH, MAX_COUNT, MAX_RAITING, ACTORS_MAX_COUNT, MIN_RANGE, COMMENT_COUNT, SortType, ESCAPE, ESC, EMOTIONS, ENTER };

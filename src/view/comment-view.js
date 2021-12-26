@@ -1,4 +1,4 @@
-import { getFormatDate } from '../utils/date';
+import { getRelativeTimeFormat } from '../utils/date';
 import AbstractView from './abstract-view';
 
 const createCommentItemTemplate = (comment = {}) => {
@@ -12,7 +12,7 @@ const createCommentItemTemplate = (comment = {}) => {
       <p class="film-details__comment-text">${text}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${getFormatDate(date, 'YYYY/MM/DD HH:MM')}</span>
+        <span class="film-details__comment-day">${getRelativeTimeFormat(date)}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
@@ -31,5 +31,4 @@ export default class CommentView extends AbstractView {
     return createCommentItemTemplate(this.#comment);
   }
 }
-
 

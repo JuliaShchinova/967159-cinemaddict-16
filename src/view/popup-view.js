@@ -167,6 +167,6 @@ export default class PopupView extends AbstractView {
   }
 
   #renderAddComment = () => {
-    render(this.container, new AddCommentView(), RenderPosition.AFTEREND);
+    render(this.container, new AddCommentView(this.#film), RenderPosition.AFTEREND);
   }
 }

@@ -1,4 +1,4 @@
-import { COMMENT_COUNT } from '../utils/const';
+import { COMMENT_COUNT, EMOTIONS } from '../utils/const';
 import { generateDate } from '../utils/date';
 import { getRandomArray, getRandomInteger } from '../utils/common';
 
@@ -40,10 +40,8 @@ const generateCommentText = () => {
 };
 
 const generateEmotion = () => {
-  const emotions = ['smile', 'sleeping', 'puke', 'angry'];
-
-  const randomIndex = getRandomInteger(0, emotions.length - 1);
-  return emotions[randomIndex];
+  const randomIndex = getRandomInteger(0, EMOTIONS.length - 1);
+  return EMOTIONS[randomIndex];
 };
 
 export const generateCommentInfo = () => ({
