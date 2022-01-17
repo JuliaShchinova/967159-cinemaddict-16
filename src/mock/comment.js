@@ -1,20 +1,6 @@
-import { COMMENT_COUNT, EMOTIONS } from '../utils/const';
+import { EMOTIONS } from '../utils/const';
 import { generateDate } from '../utils/date';
 import { getRandomArray, getRandomInteger } from '../utils/common';
-
-const generateId = () => {
-  const numders = [];
-
-  for (let i = 1; i < COMMENT_COUNT; i++) {
-    numders.push(i);
-  }
-
-  const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'j', 'h', 'i', 'g', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-
-  const id = numders[getRandomInteger(0, numders.length - 1)] + letters [getRandomInteger(0, numders.length - 1)];
-
-  return id;
-};
 
 const generateAuthor = () => {
   const authors = [
@@ -44,8 +30,8 @@ const generateEmotion = () => {
   return EMOTIONS[randomIndex];
 };
 
-export const generateCommentInfo = () => ({
-  id: generateId(),
+export const generateCommentInfo = (id) => ({
+  id: id,
   author: generateAuthor(),
   text: generateCommentText(),
   date: generateDate(2019, 2021),

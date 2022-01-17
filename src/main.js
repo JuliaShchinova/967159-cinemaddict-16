@@ -1,36 +1,53 @@
-import { CARD_COUNT, COMMENT_COUNT } from './utils/const';
-import { generateCommentInfo } from './mock/comment';
+import { CARD_COUNT, MenuItem } from './utils/const';
 import { generateFilmInfo } from './mock/film';
-import { generateFilter } from './mock/filter';
-import { render, RenderPosition } from './utils/render';
+import { remove, render, RenderPosition } from './utils/render';
 import FooterStatisticView from './view/footer-statistic-view';
-import MainNavView from './view/main-nav-view';
-import ProfileView from './view/profile-view';
 import FilmsPresenter from './presenter/films-presenter';
+import FilmsModel from './model/films-model';
+import FilterModel from './model/filter-model';
+import FilterPresenter from './presenter/filter-presenter';
+import StatisticView from './view/statistic-view';
 
-const comments = Array.from({length: COMMENT_COUNT}, generateCommentInfo);
-const films = [];
 
-for (let i = 0; i < CARD_COUNT; i++) {
-  const film = generateFilmInfo(comments);
-  films.push(film);
-}
+const films = Array.from({length: CARD_COUNT}, generateFilmInfo);
 
-const filters = generateFilter(films);
+const filmsModel = new FilmsModel();
+filmsModel.films = films;
+
+const filterModel = new FilterModel();
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
-
-render(siteMainElement, new MainNavView(filters), RenderPosition.BEFOREEND);
-
-if (films.length !== 0) {
-  const profileComponent = new ProfileView(films.length);
-  render(siteHeaderElement, profileComponent, RenderPosition.BEFOREEND);
-}
-
-const filmsPresenter = new FilmsPresenter(siteMainElement);
-filmsPresenter.init(films, comments);
-
 const footerStatisticElement = document.querySelector('.footer__statistics');
+
+const filmsPresenter = new FilmsPresenter(siteHeaderElement, siteMainElement, filmsModel, filterModel);
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
+
 const footerStatisticComponent = new FooterStatisticView(films.length);
+
+let statisticsComponent = null;
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
+      filterPresenter.init(handleSiteMenuClick);
+
+      if (!siteMainElement.querySelector('.films')) {
+        filmsPresenter.init();
+      }
+
+      remove(statisticsComponent);
+      break;
+    case MenuItem.STATS:
+      filterPresenter.init(handleSiteMenuClick, MenuItem.STATS);
+      filmsPresenter.destroy();
+      statisticsComponent = new StatisticView(filmsModel.films);
+      render(siteMainElement, statisticsComponent, RenderPosition.BEFOREEND);
+      break;
+  }
+};
+
+filterPresenter.init(handleSiteMenuClick);
+filmsPresenter.init();
+
 render(footerStatisticElement, footerStatisticComponent, RenderPosition.BEFOREEND);

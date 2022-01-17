@@ -1,4 +1,5 @@
-import { ESC, ESCAPE } from '../utils/const';
+import CommentsModel from '../model/comments-model';
+import { ESC, ESCAPE, FilterType, Mode, UpdateType, UserAction } from '../utils/const';
 import { remove, render, RenderPosition, replace } from '../utils/render';
 import FilmCardView from '../view/film-card-view';
 import PopupView from '../view/popup-view';
@@ -7,28 +8,38 @@ export default class FilmPresenter {
   #filmListContainer = null;
   #changeData = null;
   #closePopup = null;
+  #filterType = null;
+  #changeWatchedData = null;
 
   #filmComponent = null;
   #popupComponent = null;
 
   #film = null;
-  #comments = [];
+  #commentsModel = null;
+  #mode = null;
 
-  constructor (filmListContainer, changeData, closePopup) {
+  constructor (filmListContainer, comments, changeData, closePopup, filterType, changeWatchedData) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
     this.#closePopup = closePopup;
+    this.#filterType = filterType;
+    this.#changeWatchedData = changeWatchedData;
+
+    this.#mode = Mode.DEFAULT;
+
+    this.#commentsModel = new CommentsModel();
+    this.#commentsModel.comments = comments;//потом в сетях перенести в init
+    this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
-  init = (film, comments) => {
+  init = (film) => {
     this.#film = film;
-    this.#comments = comments;
 
     const prevFilmComponent = this.#filmComponent;
-    const prevPopupComponent = this.#popupComponent;
+    const prevPopupComponent = this.#popupComponent;//
 
     this.#filmComponent = new FilmCardView(film);
-    this.#popupComponent = new PopupView(film, comments);
+    this.#popupComponent = new PopupView(film, this.#commentsModel.comments, this.#handleViewAction);//
 
     this.#filmComponent.setLinkClickHandler(this.#handleLinkClick);
     this.#filmComponent.setIsInWatchlistClickHandler(this.#handleIsInWatchlistClick);
@@ -40,10 +51,11 @@ export default class FilmPresenter {
       return;
     }
 
-
     if (this.#filmListContainer.contains(prevFilmComponent.element)) {
       replace(this.#filmComponent, prevFilmComponent);
     }
+
+    // this.#initPopup(film);
 
     if (document.body.contains(prevPopupComponent.element)) {
       const scrollPosition = prevPopupComponent.element.scrollTop;
@@ -55,7 +67,9 @@ export default class FilmPresenter {
 
       this.#setPopupHandlers();
       remove(prevPopupComponent);
-    }
+
+      console.log('init-1');
+    }//
 
     remove(prevFilmComponent);
   }
@@ -63,6 +77,27 @@ export default class FilmPresenter {
   destroy = () => {
     remove(this.#filmComponent);
   }
+
+  #initPopup = (film) => {
+    this.#film = film;
+
+    const prevPopupComponent = this.#popupComponent;
+
+    this.#popupComponent = new PopupView(film, this.#commentsModel.comments, this.#handleViewAction);
+
+    if (document.body.contains(prevPopupComponent.element)) {
+      const scrollPosition = prevPopupComponent.element.scrollTop;
+
+      replace(this.#popupComponent, prevPopupComponent);
+      this.#popupComponent.renderCommentInfo();
+
+      this.#popupComponent.element.scrollTop = scrollPosition;
+
+      this.#setPopupHandlers();
+      remove(prevPopupComponent);
+      console.log('init-2');
+    }
+  }//
 
   #renderPopup = () => {
     render(document.body, this.#popupComponent, RenderPosition.BEFOREEND);
@@ -72,6 +107,7 @@ export default class FilmPresenter {
     this.#setPopupHandlers();
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.EDIT;
   }
 
   #setPopupHandlers = () => {
@@ -88,6 +124,35 @@ export default class FilmPresenter {
   #removePopup = () => {
     remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
+    this.#mode = Mode.DEFAULT;
+  }
+
+  #handleViewAction = (actionType, update) => {
+    switch (actionType) {
+      case UserAction.ADD_COMMENT:
+        this.#commentsModel.addComment(actionType, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this.#commentsModel.deleteComment(actionType, update);
+        break;
+    }
+  }
+
+  #handleModelEvent = (actionType, data) => {
+    switch (actionType) {
+      case UserAction.ADD_COMMENT:
+        this.#changeData(
+          UserAction.ADD_COMMENT,
+          UpdateType.PATCH,
+          {...this.#film, comments: this.#film.comments.concat([data.id])});
+        break;
+      case UserAction.DELETE_COMMENT:
+        this.#changeData(
+          UserAction.DELETE_COMMENT,
+          UpdateType.PATCH,
+          {...this.#film, comments: this.#film.comments.filter((comment) => comment !== data)});
+        break;
+    }
   }
 
   #handleLinkClick = () => {
@@ -98,7 +163,7 @@ export default class FilmPresenter {
   }
 
   #handleIsInWatchlistClick = () => {
-    this.#changeData(Object.assign(
+    const updated = Object.assign(
       {},
       this.#film,
       {
@@ -110,11 +175,21 @@ export default class FilmPresenter {
           watchingDate: this.#film.userDetails.watchingDate
         },
       },
-    ));
+    );
+
+    this.#changeData(
+      UserAction.UPDATE_STATS,
+      this.#filterType !== FilterType.WATCHLIST ? UpdateType.PATCH : UpdateType.MINOR,
+      updated);
+
+
+    if ( this.#mode === Mode.EDIT) {
+      this.#initPopup(updated);
+    }//
   }
 
   #handleIsAlreadyWatchedClick = () => {
-    this.#changeData(Object.assign(
+    const updated = Object.assign(
       {},
       this.#film,
       {
@@ -123,14 +198,25 @@ export default class FilmPresenter {
           isInWatchlist: this.#film.userDetails.isInWatchlist,
           isAlreadyWatched: !this.#film.userDetails.isAlreadyWatched,
           isFavorites: this.#film.userDetails.isFavorites,
-          watchingDate: this.#film.userDetails.watchingDate,
+          watchingDate: !this.#film.userDetails.watchingDate ? new Date() : null,
         },
       },
-    ));
+    );
+
+    this.#changeData(
+      UserAction.UPDATE_STATS,
+      this.#filterType !== FilterType.HISTORY ? UpdateType.PATCH : UpdateType.MINOR,
+      updated);
+
+    if ( this.#mode === Mode.EDIT) {
+      this.#initPopup(updated);
+    }//
+
+    this.#changeWatchedData();//
   }
 
   #handleIsFavoritesClick = () => {
-    this.#changeData(Object.assign(
+    const updated = Object.assign(
       {},
       this.#film,
       {
@@ -142,8 +228,18 @@ export default class FilmPresenter {
           watchingDate: this.#film.userDetails.watchingDate,
         },
       },
-    ));
+    );
+
+    this.#changeData(
+      UserAction.UPDATE_STATS,
+      this.#filterType !== FilterType.FAVORITES ? UpdateType.PATCH : UpdateType.MINOR,
+      updated);
+
+    if ( this.#mode === Mode.EDIT) {
+      this.#initPopup(updated);
+    }//
   }
+
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === ESCAPE || evt.key === ESC) {

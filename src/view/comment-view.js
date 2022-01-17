@@ -1,5 +1,6 @@
 import { getRelativeTimeFormat } from '../utils/date';
 import AbstractView from './abstract-view';
+import he from 'he';
 
 const createCommentItemTemplate = (comment = {}) => {
   const {author, text, date, emotion} = comment;
@@ -9,7 +10,7 @@ const createCommentItemTemplate = (comment = {}) => {
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
     </span>
     <div>
-      <p class="film-details__comment-text">${text}</p>
+      <p class="film-details__comment-text">${he.encode(text)}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${getRelativeTimeFormat(date)}</span>
@@ -22,13 +23,23 @@ const createCommentItemTemplate = (comment = {}) => {
 export default class CommentView extends AbstractView {
   #comment = null;
 
-  constructor(comment) {
+  constructor (comment) {
     super();
     this.#comment = comment;
   }
 
-  get template() {
+  get template () {
     return createCommentItemTemplate(this.#comment);
+  }
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.film-details__comment-delete').addEventListener('click', this.#deleteClickHandler);
+  }
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(this.#comment.id);
   }
 }
 

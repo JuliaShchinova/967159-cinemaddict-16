@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import { EMOTIONS, ENTER } from '../utils/const';
 import SmartView from './smart-view';
 
@@ -28,14 +30,10 @@ const addCommentTemplate = (data) => (
 );
 
 export default class AddCommentView extends SmartView {
-  #film = null;
-  #commentInput = null;
-
-  constructor (film) {
+  constructor () {
     super();
 
-    this._data = AddCommentView.parseFilmToData(film);
-    this.setFormSubmitHandler(this.#commentSubmit);//
+    this._data = AddCommentView.parseFilmToData();
     this.#setInnerHandlers();
   }
 
@@ -44,21 +42,20 @@ export default class AddCommentView extends SmartView {
   }
 
   restoreHandlers = () => {
-    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormKeydownHandler(this._callback.formSubmit);
     this.#setInnerHandlers();
   }
 
-  setFormSubmitHandler = (callback) => {
+  setFormKeydownHandler = (callback) => {
     this._callback.formSubmit = callback;
-    this.#commentInput = this.element.querySelector('.film-details__comment-input');
-    this.#commentInput.addEventListener('keydown', this.#formSubmitHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#formKeydownHandler);
   }
 
   // reset = (film) => {
-  //   this.updateData(AddCommentView.parseFilmToData(film));
+  //   this.updateData(AddCommentView.parseFilmToData());
   // }
 
-  #formSubmitHandler = (evt) => {
+  #formKeydownHandler = (evt) => {
     if (evt.key === ENTER && (evt.metaKey === true || evt.ctrlKey === true)) {
 
       if (!this._data.emoji || !this._data.comment) {
@@ -66,7 +63,19 @@ export default class AddCommentView extends SmartView {
       }
 
       evt.preventDefault();
-      this._callback.formSubmit(AddCommentView.parseDataToFilm(this._data));
+      this.#disableForm();
+
+      const newComment = {
+        id: nanoid(), //
+        author: 'New Author', //
+        text: this._data.comment,
+        date: dayjs(Date.now()).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),//
+        emotion: this._data.emoji,
+      };
+
+      AddCommentView.parseDataToFilm(this._data);
+      this._callback.formSubmit(newComment);
+
     }
   }
 
@@ -91,26 +100,31 @@ export default class AddCommentView extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emojiChangeHandler);
-    this.#commentInput.addEventListener('input', this.#commentInputHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   }
 
-  #commentSubmit = () => {
-    this.#commentInput.disabled = true;
-  }//
+  #disableForm = () => {
+    this.element.querySelector('.film-details__comment-input').disabled = true;
+    this.element.querySelector('.film-details__emoji-list').disabled = true;
+  }
 
-  static parseFilmToData = (film) => ({...film,
-    emoji: null,
-    comment: '',
-    emojiChecked: ''
-  });
+  static parseFilmToData = () => {
+    const data = {};
+
+    return {...data,
+      emoji: null,
+      comment: '',
+      emojiChecked: ''
+    };
+  }
 
   static parseDataToFilm = (data) => {
-    const film = {...data};
+    const comment = {...data};
 
-    delete film.emoji;
-    delete film.comment;
-    delete film.emojiChecked;
+    delete comment.emoji;
+    delete comment.comment;
+    delete comment.emojiChecked;
 
-    return film;
+    return comment;
   }
 }

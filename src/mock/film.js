@@ -96,21 +96,26 @@ const generateActors = () => {
 
 const generateGenres = () => {
   const genres = [
-    'Comedy',
-    'Tragedy',
-    'Horrors',
-    'Melodrama',
-    'Thriller',
-    'Western'
+    'Drama',
+    'Triller',
+    'Animation',
+    'Adventure',
+    'Family',
+    'Sci-Fi',
+    'Action',
+    'Horror',
+    'Comedy'
   ];
 
   return getRandomArray(genres, MIN_RANGE, genres.length - 1);
 };
 
-const generateComments = (loadedComments) => {
-  const comments = loadedComments.map((comment) => comment.id);
 
-  return getRandomArray(comments, 0, MAX_COUNT);
+const generateComments = () => {
+  const count = getRandomInteger(0, MAX_COUNT);
+  const comments = Array.from({length: count}, nanoid);
+
+  return comments;
 };
 
 const generateCountry = () => {
@@ -134,7 +139,7 @@ const generateUserDetails = () => ({
 });
 
 
-export const generateFilmInfo = (loadedComments) => ({
+export const generateFilmInfo = () => ({
   id: nanoid(),
   title: generateTitle(),
   alternativeTitle: generateTitle(),
@@ -151,6 +156,6 @@ export const generateFilmInfo = (loadedComments) => ({
   runtime: getRandomInteger(60, 180),
   genres: generateGenres(),
   description: generateDescription(),
-  comments: generateComments(loadedComments),
-  userDetails: generateUserDetails()
+  comments: generateComments(),
+  userDetails: generateUserDetails(),
 });

@@ -1,3 +1,4 @@
+import { UserAction } from '../utils/const';
 import { getDurationTime, getFormatDate } from '../utils/date';
 import { render, RenderPosition } from '../utils/render';
 import { addClass } from '../utils/utils';
@@ -96,12 +97,14 @@ export default class PopupView extends AbstractView {
   #film = null;
   #filmComments = [];
   #container = null;
+  #changeCommentData = null;
 
-  constructor (film, filmComments) {
+  constructor (film, filmComments, changeCommentData) {
     super();
 
     this.#film = film;
     this.#filmComments = [...filmComments];
+    this.#changeCommentData = changeCommentData;
   }
 
   get template() {
@@ -160,13 +163,24 @@ export default class PopupView extends AbstractView {
   }
 
   #renderComments = () => {
-    for (const id of this.#film.comments) {
-      const comment = this.#filmComments.find((item) => id === item.id);
-      render(this.container, new CommentView(comment), RenderPosition.BEFOREEND);
+    for (const comment of this.#filmComments) {
+      const commentComponent = new CommentView(comment);
+      commentComponent.setDeleteClickHandler(this.#handleDeleteCommentClick);
+      render(this.container, commentComponent, RenderPosition.BEFOREEND);
     }
   }
 
   #renderAddComment = () => {
-    render(this.container, new AddCommentView(this.#film), RenderPosition.AFTEREND);
+    const addCommentComponent = new AddCommentView();
+    addCommentComponent.setFormKeydownHandler(this.#addCommentKeydownHandler);
+    render(this.container, addCommentComponent, RenderPosition.AFTEREND);
+  }
+
+  #handleDeleteCommentClick = (update) => {
+    this.#changeCommentData(UserAction.DELETE_COMMENT, update);
+  }
+
+  #addCommentKeydownHandler = (update) => {
+    this.#changeCommentData(UserAction.ADD_COMMENT, update);
   }
 }
