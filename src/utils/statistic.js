@@ -11,7 +11,7 @@ const DateForCompare = {
   YEAR: dayjs().subtract(STATISTIC_COUNT, 'year').toDate(),
 };
 
-export const statisticFilter = {
+const statisticFilter = {
   [StatisticsType.ALL]: (films) => films.filter((film) => film),
   [StatisticsType.TODAY]: (films) => films.filter((film) => dayjs(film.userDetails.watchingDate).isSame(DateForCompare.TODAY, 'day')),
   [StatisticsType.WEEK]: (films) => films.filter((film) => dayjs(film.userDetails.watchingDate).isBetween(DateForCompare.WEEK, DateForCompare.TODAY, 'week', '[]')),
@@ -19,17 +19,17 @@ export const statisticFilter = {
   [StatisticsType.YEAR]: (films) => films.filter((film) => dayjs(film.userDetails.watchingDate).isBetween(DateForCompare.YEAR, DateForCompare.TODAY, 'year', '[]')),
 };
 
-export const getTotalDuration = (films) => {
-  const totalDuration = films.map((film) => film.runtime).reduce((sum, current) => sum + current, 0);
+const getTotalDuration = (films) => {
+  const totalDuration = films.map((film) => film.filmInfo.runtime).reduce((sum, current) => sum + current, 0);
 
   return totalDuration;
 };
 
-export const getGenres = (films) => {
+const getGenres = (films) => {
   const genresMap = {};
 
   films.map((film) => {
-    film.genres.forEach((genre) => {
+    film.filmInfo.genre.forEach((genre) => {
       if (genre in genresMap) {
         genresMap[genre] ++;
       } else {
@@ -41,7 +41,7 @@ export const getGenres = (films) => {
   return genresMap;
 };
 
-export const getTopGenre = (films) => {
+const getTopGenre = (films) => {
   if (films.length === 0) {
     return '';
   }
@@ -52,3 +52,9 @@ export const getTopGenre = (films) => {
   return topGenre;
 };
 
+export {
+  statisticFilter,
+  getTotalDuration,
+  getGenres,
+  getTopGenre,
+};

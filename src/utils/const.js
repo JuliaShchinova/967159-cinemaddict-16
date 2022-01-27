@@ -1,56 +1,53 @@
-export const CARD_COUNT = 21;
-export const MAX_DESCRIPTION_LENGTH = 140;
-export const TEXT_LENGTH = 139;
-export const MAX_COUNT = 5;
-export const SORT_COUNT = 2;
-export const MAX_RAITING = 10;
-export const ACTORS_MAX_COUNT = 3;
-export const MIN_RANGE = 1;
-export const COMMENT_COUNT = 10;
-export const STATISTIC_COUNT = 1;
+const MAX_DESCRIPTION_LENGTH = 140;
+const TEXT_LENGTH = 139;
+const SORT_COUNT = 2;
+const STATISTIC_COUNT = 1;
 
-export const ESCAPE = 'Escape';
-export const ESC = 'Esc';
-export const ENTER = 'Enter';
+const ESCAPE = 'Escape';
+const ESC = 'Esc';
+const ENTER = 'Enter';
 
-export const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
+const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
-export const SortType = {
+const SortType = {
   DEFAULT: 'default',
   BY_DATE: 'by-date',
   BY_RAITING: 'by-rating',
 };
 
-export const UserAction = {
+const UserAction = {
   UPDATE_STATS: 'UPDATE_STATS',
   ADD_COMMENT: 'ADD',
   DELETE_COMMENT: 'DELETE',
+  INIT_COMMENTS: 'INIT_COMMENTS'
 };
 
-export const UpdateType = {
+const UpdateType = {
   PATCH: 'PATCH',
+  PART: 'PART',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT'
 };
 
-export const FilterType = {
+const FilterType = {
   ALL: 'All movies',
   WATCHLIST: 'Watchlist',
   HISTORY: 'History',
   FAVORITES: 'Favorites',
 };
 
-export const Mode = {
+const Mode = {
   DEFAULT: 'DEFAULT',
   EDIT: 'EDIT'
 };
 
-export const MenuItem = {
+const MenuItem = {
   FILMS: 'FILMS',
   STATS: 'STATS',
 };
 
-export const userRank = {
+const userRank = {
   'None': {
     MIN: 0,
     MAX: 0
@@ -69,7 +66,7 @@ export const userRank = {
   }
 };
 
-export const StatisticsType = {
+const StatisticsType = {
   ALL: 'all-time',
   TODAY: 'today',
   WEEK: 'week',
@@ -77,7 +74,26 @@ export const StatisticsType = {
   YEAR: 'year',
 };
 
-export const DateQuantity = {
-  WEEK: 7,
-  ANOTHER: 1
+const AUTHORIZATION = 'Basic 29bkmz2014';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
+
+export {
+  AUTHORIZATION,
+  END_POINT,
+  MAX_DESCRIPTION_LENGTH,
+  TEXT_LENGTH,
+  SORT_COUNT,
+  STATISTIC_COUNT,
+  ESCAPE,
+  ESC,
+  ENTER,
+  EMOTIONS,
+  SortType,
+  UserAction,
+  UpdateType,
+  FilterType,
+  Mode,
+  MenuItem,
+  userRank,
+  StatisticsType,
 };
