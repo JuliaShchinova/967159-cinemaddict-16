@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { StatisticsType, STATISTIC_COUNT } from './const';
+import { StatisticsType } from './const';
 
 dayjs.extend(isBetween);
+
+const STATISTIC_COUNT = 1;
 
 const DateForCompare = {
   TODAY: dayjs(Date.now()).toDate(),
@@ -35,6 +37,10 @@ const getGenres = (films) => {
       } else {
         genresMap[genre] = 1;
       }
+
+      // (genre in genresMap) ? genresMap[genre]++ : genresMap[genre] = 1;
+
+      // genresMap[genre] = (genre in genresMap) ? genresMap[genre] ++ : 1;
     });
   });
 

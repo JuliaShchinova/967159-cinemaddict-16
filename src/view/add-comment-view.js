@@ -1,5 +1,7 @@
-import { EMOTIONS, ENTER } from '../utils/const';
 import SmartView from './smart-view';
+
+const ENTER = 'Enter';
+const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
 const addCommentTemplate = (data) => {
   const {

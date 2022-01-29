@@ -1,5 +1,7 @@
 import AbstractObservable from '../utils/abstract-observable';
-import { SORT_COUNT, UpdateType } from '../utils/const';
+import { UpdateType } from '../utils/const';
+
+const SORT_COUNT = 2;
 
 export default class FilmsModel extends AbstractObservable {
   #apiService = null;

@@ -1,13 +1,5 @@
-const MAX_DESCRIPTION_LENGTH = 140;
-const TEXT_LENGTH = 139;
-const SORT_COUNT = 2;
-const STATISTIC_COUNT = 1;
-
-const ESCAPE = 'Escape';
-const ESC = 'Esc';
-const ENTER = 'Enter';
-
-const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
+const AUTHORIZATION = 'Basic 29bkmz2014';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
 
 const SortType = {
   DEFAULT: 'default',
@@ -35,11 +27,6 @@ const FilterType = {
   WATCHLIST: 'Watchlist',
   HISTORY: 'History',
   FAVORITES: 'Favorites',
-};
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDIT: 'EDIT'
 };
 
 const MenuItem = {
@@ -74,25 +61,13 @@ const StatisticsType = {
   YEAR: 'year',
 };
 
-const AUTHORIZATION = 'Basic 29bkmz2014';
-const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
-
 export {
   AUTHORIZATION,
   END_POINT,
-  MAX_DESCRIPTION_LENGTH,
-  TEXT_LENGTH,
-  SORT_COUNT,
-  STATISTIC_COUNT,
-  ESCAPE,
-  ESC,
-  ENTER,
-  EMOTIONS,
   SortType,
   UserAction,
   UpdateType,
   FilterType,
-  Mode,
   MenuItem,
   userRank,
   StatisticsType,

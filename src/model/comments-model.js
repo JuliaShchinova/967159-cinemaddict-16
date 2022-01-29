@@ -10,7 +10,6 @@ export default class CommentsModel extends AbstractObservable {
     this.#apiService = apiService;
   }
 
-
   get comments () {
     return this.#comments;
   }

@@ -9,7 +9,7 @@ export default class ApiService {
   #endPoint = null;
   #authorization = null;
 
-  constructor(endPoint, authorization) {
+  constructor (endPoint, authorization) {
     this.#endPoint = endPoint;
     this.#authorization = authorization;
   }

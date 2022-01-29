@@ -1,7 +1,9 @@
-import { MAX_DESCRIPTION_LENGTH, TEXT_LENGTH } from '../utils/const';
 import { getDurationTime, getFormatDate } from '../utils/date';
 import { addClass } from '../utils/utils';
 import AbstractView from './abstract-view';
+
+const MAX_DESCRIPTION_LENGTH = 140;
+const TEXT_LENGTH = 139;
 
 const createFilmCardTemplate = (film) => {
   const {id, filmInfo, comments, userDetails} = film;
@@ -42,7 +44,7 @@ const createFilmCardTemplate = (film) => {
 export default class FilmCardView extends AbstractView {
   #film = null;
 
-  constructor(film) {
+  constructor (film) {
     super();
     this.#film = film;
   }

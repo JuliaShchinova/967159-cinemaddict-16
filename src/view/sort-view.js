@@ -19,7 +19,6 @@ export default class SortView extends AbstractView {
     super();
 
     this.#currentSortType = currentSortType;
-
   }
 
   get template() {

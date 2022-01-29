@@ -139,6 +139,30 @@ export default class PopupView extends AbstractView {
     this.#renderAddComment();
   }
 
+  updateData = (state, id) => {
+    switch (state) {
+      case State.SAVING:
+        this.#addCommentComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#filmComments.get(id).updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        if (!id) {
+          this.#setCommentAborting(id);
+        } else {
+          this.#setAddCommentAborting();
+        }
+        break;
+    }
+  }
+
   setCloseClickHandler = (callback) => {
     this._callback.closeClick = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
@@ -159,28 +183,18 @@ export default class PopupView extends AbstractView {
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#isFavoritesClickHandler);
   }
 
-  updateData = (state, id) => {
-    switch (state) {
-      case State.SAVING:
-        this.#addCommentComponent.updateData({
-          isDisabled: true,
-          isSaving: true,
-        });
-        break;
-      case State.DELETING:
-        this.#filmComments.get(id).updateData({
-          isDisabled: true,
-          isDeleting: true,
-        });
-        break;
-      case State.ABORTING:
-        if (id !== null) {
-          this.#setCommentAborting(id);
-        } else {
-          this.#setAddCommentAborting();
-        }
-        break;
+  #renderComments = (comments = []) => {
+    for (const comment of comments) {
+      const commentComponent = new CommentView(comment);
+      commentComponent.setDeleteClickHandler(this.#handleDeleteCommentClick);
+      render(this.container, commentComponent, RenderPosition.BEFOREEND);
+      this.#filmComments.set(comment.id, commentComponent);
     }
+  }
+
+  #renderAddComment = () => {
+    this.#addCommentComponent.setFormKeydownHandler(this.#addCommentKeydownHandler);
+    render(this.container, this.#addCommentComponent, RenderPosition.AFTEREND);
   }
 
   #setAddCommentAborting = () => {
@@ -223,20 +237,6 @@ export default class PopupView extends AbstractView {
   #isFavoritesClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoritesClick();
-  }
-
-  #renderComments = (comments = []) => {
-    for (const comment of comments) {
-      const commentComponent = new CommentView(comment);
-      commentComponent.setDeleteClickHandler(this.#handleDeleteCommentClick);
-      render(this.container, commentComponent, RenderPosition.BEFOREEND);
-      this.#filmComments.set(comment.id, commentComponent);
-    }
-  }
-
-  #renderAddComment = () => {
-    this.#addCommentComponent.setFormKeydownHandler(this.#addCommentKeydownHandler);
-    render(this.container, this.#addCommentComponent, RenderPosition.AFTEREND);
   }
 
   #handleDeleteCommentClick = (update) => {

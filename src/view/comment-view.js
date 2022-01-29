@@ -41,7 +41,7 @@ export default class CommentView extends SmartView {
 
   #deleteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteClick(CommentView.parseDataToComment(this._data).id);//
+    this._callback.deleteClick(CommentView.parseDataToComment(this._data).id);
   }
 
   static parseCommentToData = (comment) => ({...comment,

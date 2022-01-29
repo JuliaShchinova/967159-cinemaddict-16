@@ -35,7 +35,7 @@ export default class FilterView extends AbstractView {
   #currentFilter = null;
   #menuItem = null;
 
-  constructor(filters, currentFilterType, menuItem) {
+  constructor (filters, currentFilterType, menuItem) {
     super();
     this.#filters = filters;
     this.#currentFilter = currentFilterType;

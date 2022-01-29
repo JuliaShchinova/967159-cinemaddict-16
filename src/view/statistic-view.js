@@ -158,7 +158,7 @@ export default class StatisticView extends SmartView {
   #currentFilter = null;
   #chart = null;
 
-  constructor(films) {
+  constructor (films) {
     super();
 
     this.#watchedFilms = films.filter((film) => film.userDetails.isAlreadyWatched);

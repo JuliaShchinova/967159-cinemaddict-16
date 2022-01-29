@@ -8,9 +8,6 @@ import FilterPresenter from './presenter/filter-presenter';
 import StatisticView from './view/statistic-view';
 import ApiService from './api-service';
 
-// const AUTHORIZATION = 'Basic 29bkmz2014';
-// const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
-
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 const footerStatisticElement = document.querySelector('.footer__statistics');
@@ -24,7 +21,6 @@ const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsM
 let statisticsComponent = null;
 
 const footerStatisticComponent = new FooterStatisticView(filmsModel.films.length);
-render(footerStatisticElement, footerStatisticComponent, RenderPosition.BEFOREEND);
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -47,6 +43,8 @@ const handleSiteMenuClick = (menuItem) => {
       break;
   }
 };
+
+render(footerStatisticElement, footerStatisticComponent, RenderPosition.BEFOREEND);
 
 filterPresenter.init(handleSiteMenuClick);
 filmsPresenter.init();

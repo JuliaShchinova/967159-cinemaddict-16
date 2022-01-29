@@ -1,4 +1,3 @@
-// import { generateCommentInfo } from '../mock/comment';
 import { FilterType, SortType, UpdateType, UserAction } from '../utils/const';
 import { filter } from '../utils/filter';
 import { remove, render, RenderPosition, replace } from '../utils/render';
@@ -41,7 +40,7 @@ export default class FilmsPresenter {
 
   #isLoading =  true;
 
-  constructor(profileContainer, filmsContainer, filmsModel, filterModel) {
+  constructor (profileContainer, filmsContainer, filmsModel, filterModel) {
     this.#profileContainer = profileContainer;
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
@@ -154,34 +153,6 @@ export default class FilmsPresenter {
     }
   }
 
-  #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
-    const filmCount = this.films.length;
-
-    this.#filmPresenter.forEach((presenter) => presenter.destroy());
-    this.#filmPresenter.clear();
-
-    [this.#sortComponent,
-      this.#loadingComponent,
-      this.#showMoreButtonComponent,
-      this.#filmsListComponent,
-      this.#filmsListRatedComponent,
-      this.#filmsListCommentedComponent].forEach((component) => remove(component));
-
-    if (this.#listEmptyComponent) {
-      remove(this.#listEmptyComponent);
-    }
-
-    if (resetRenderedFilmCount) {
-      this.#renderedCardCount = CARD_COUNT_PER_STEP;
-    } else {
-      this.#renderedCardCount = Math.min(filmCount, this.#renderedCardCount);
-    }
-
-    if (resetSortType) {
-      this.#currentSortType = SortType.DEFAULT;
-    }
-  }
-
   #renderBoard = () => {
     if (this.#isLoading) {
       this.#renderLoading();
@@ -212,6 +183,46 @@ export default class FilmsPresenter {
     }
   }
 
+  #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
+    const filmCount = this.films.length;
+
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+
+    [this.#sortComponent,
+      this.#loadingComponent,
+      this.#showMoreButtonComponent,
+      this.#filmsListComponent,
+      this.#filmsListRatedComponent,
+      this.#filmsListCommentedComponent].forEach((component) => remove(component));
+
+    if (this.#listEmptyComponent) {
+      remove(this.#listEmptyComponent);
+    }
+
+    if (resetRenderedFilmCount) {
+      this.#renderedCardCount = CARD_COUNT_PER_STEP;
+    } else {
+      this.#renderedCardCount = Math.min(filmCount, this.#renderedCardCount);
+    }
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
+  }
+
+  #initFilmPresenter = (presenter, updatedFilm) => {
+    if (presenter.has(updatedFilm.id)) {
+      presenter.get(updatedFilm.id).init(updatedFilm);
+    }
+  }
+
+  #updateFilm = (updatedFilm) => {
+    [this.#filmPresenter,
+      this.#filmRatedPresenter,
+      this.#filmCommentedPresenter].forEach((presenter) => this.#initFilmPresenter(presenter, updatedFilm));
+  }
+
   #handleOpenPopup = (checkBodyClass = false) => {
     if (document.body.querySelector('.film-details')) {
       document.body.querySelector('.film-details').remove();
@@ -235,18 +246,6 @@ export default class FilmsPresenter {
     }
   }
 
-  #initFilmPresenter = (presenter, updatedFilm) => {
-    if (presenter.has(updatedFilm.id)) {
-      presenter.get(updatedFilm.id).init(updatedFilm);
-    }
-  }
-
-  #updateFilm = (updatedFilm) => {
-    [this.#filmPresenter,
-      this.#filmRatedPresenter,
-      this.#filmCommentedPresenter].forEach((presenter) => this.#initFilmPresenter(presenter, updatedFilm));
-  }
-
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_STATS:
@@ -267,16 +266,11 @@ export default class FilmsPresenter {
         this.#updateFilm(data);
         break;
       case UpdateType.PART:
-        remove(this.#filmsListCommentedComponent);
-        console.log(this.#filmCommentedPresenter)
-        // this.#filmCommentedPresenter.clear();
-        this.#renderFilmsListCommentedComponent();
-
+        if (!this.#filmsModel.mostCommentedFilms.find((film) => film.id === data.id)) {
+          remove(this.#filmsListCommentedComponent);
+          this.#renderFilmsListCommentedComponent();
+        }
         this.#updateFilm(data);
-
-        // remove(this.#filmsListCommentedComponent);
-        // // this.#filmCommentedPresenter.clear();
-        // this.#renderFilmsListCommentedComponent();
         break;
       case UpdateType.MINOR:
         this.#clearBoard();

@@ -1,9 +1,17 @@
 import ApiService from '../api-service';
 import CommentsModel from '../model/comments-model';
-import { AUTHORIZATION, END_POINT, ESC, ESCAPE, FilterType, Mode, UpdateType, UserAction } from '../utils/const';
+import { AUTHORIZATION, END_POINT, FilterType, UpdateType, UserAction } from '../utils/const';
 import { remove, render, RenderPosition, replace } from '../utils/render';
 import FilmCardView from '../view/film-card-view';
 import PopupView from '../view/popup-view';
+
+const ESCAPE = 'Escape';
+const ESC = 'Esc';
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDIT: 'EDIT'
+};
 
 export const State = {
   SAVING: 'SAVING',
@@ -100,17 +108,6 @@ export default class FilmPresenter {
     this.#mode = Mode.EDIT;
   }
 
-  #setPopupHandlers = () => {
-    this.#popupComponent.setCloseClickHandler(() => {
-      this.#removePopup();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    });
-
-    this.#popupComponent.setIsInWatchlistClickHandler(this.#handleIsInWatchlistClick);
-    this.#popupComponent.setIsAlreadyWatchedClickHandler(this.#handleIsAlreadyWatchedClick);
-    this.#popupComponent.setIsFavoritesClickHandler(this.#handleIsFavoritesClick);
-  }
-
   #removePopup = () => {
     remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
@@ -140,17 +137,15 @@ export default class FilmPresenter {
 
   #handleModelEvent = (actionType, data) => {
     switch (actionType) {
-      case UserAction.ADD_COMMENT://
+      case UserAction.ADD_COMMENT:
         this.#changeData(
           UserAction.ADD_COMMENT,
-          // UpdateType.PATCH,
           UpdateType.PART,
           {...this.#film, comments: data.comments.map((comment) => comment.id)});
         break;
-      case UserAction.DELETE_COMMENT://
+      case UserAction.DELETE_COMMENT:
         this.#changeData(
           UserAction.DELETE_COMMENT,
-          // UpdateType.PATCH,
           UpdateType.PART,
           {...this.#film, comments: this.#film.comments.filter((comment) => comment !== data)});
         break;
@@ -158,6 +153,17 @@ export default class FilmPresenter {
         this.#popupComponent.renderCommentInfo(this.#commentsModel.comments);
         break;
     }
+  }
+
+  #setPopupHandlers = () => {
+    this.#popupComponent.setCloseClickHandler(() => {
+      this.#removePopup();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    });
+
+    this.#popupComponent.setIsInWatchlistClickHandler(this.#handleIsInWatchlistClick);
+    this.#popupComponent.setIsAlreadyWatchedClickHandler(this.#handleIsAlreadyWatchedClick);
+    this.#popupComponent.setIsFavoritesClickHandler(this.#handleIsFavoritesClick);
   }
 
   #handleLinkClick = () => {
@@ -177,10 +183,9 @@ export default class FilmPresenter {
       this.#filterType !== FilterType.WATCHLIST ? UpdateType.PATCH : UpdateType.MINOR,
       updated);
 
-
-    // if (this.#mode === Mode.EDIT) {
-    //   this.#initPopup(updated);
-    // }//
+    if (this.#filterType === FilterType.WATCHLIST && this.#mode === Mode.EDIT) {
+      this.#removePopup();
+    }
   }
 
   #handleIsAlreadyWatchedClick = () => {
@@ -196,11 +201,11 @@ export default class FilmPresenter {
       this.#filterType !== FilterType.HISTORY ? UpdateType.PATCH : UpdateType.MINOR,
       updated);
 
-    // if (this.#mode === Mode.EDIT) {
-    //   this.#initPopup(updated);
-    // }//
+    if (this.#filterType === FilterType.HISTORY && this.#mode === Mode.EDIT) {
+      this.#removePopup();
+    }
 
-    this.#changeWatchedData();//
+    this.#changeWatchedData();
   }
 
   #handleIsFavoritesClick = () => {
@@ -213,11 +218,10 @@ export default class FilmPresenter {
       this.#filterType !== FilterType.FAVORITES ? UpdateType.PATCH : UpdateType.MINOR,
       updated);
 
-    // if (this.#mode === Mode.EDIT) {
-    //   this.#initPopup(updated);
-    // }//
+    if (this.#filterType === FilterType.FAVORITES && this.#mode === Mode.EDIT) {
+      this.#removePopup();
+    }
   }
-
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === ESCAPE || evt.key === ESC) {
