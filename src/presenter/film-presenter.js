@@ -8,7 +8,7 @@ import PopupView from '../view/popup-view';
 const ESCAPE = 'Escape';
 const ESC = 'Esc';
 
-const Mode = {
+export const Mode = {
   DEFAULT: 'DEFAULT',
   EDIT: 'EDIT'
 };
@@ -31,7 +31,6 @@ export default class FilmPresenter {
 
   #film = null;
   #commentsModel = null;
-  #mode = null;
 
   constructor (filmListContainer, changeData, closePopup, filterType, changeWatchedData) {
     this.#filmListContainer = filmListContainer;
@@ -40,7 +39,7 @@ export default class FilmPresenter {
     this.#filterType = filterType;
     this.#changeWatchedData = changeWatchedData;
 
-    this.#mode = Mode.DEFAULT;
+    this.mode = Mode.DEFAULT;
 
     this.#commentsModel = new CommentsModel(new ApiService(END_POINT, AUTHORIZATION));
     this.#commentsModel.addObserver(this.#handleModelEvent);
@@ -89,11 +88,19 @@ export default class FilmPresenter {
   }
 
   setViewState = (state, id = null) => {
-    if (this.#mode === Mode.DEFAULT) {
+    if (this.mode === Mode.DEFAULT) {
       return;
     }
 
     this.#popupComponent.updateData(state, id);
+  }
+
+  removePopup = () => {
+    remove(this.#popupComponent);
+    document.body.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+
+    this.mode = Mode.DEFAULT;
   }
 
   #renderPopup = () => {
@@ -105,13 +112,7 @@ export default class FilmPresenter {
     this.#setPopupHandlers();
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = Mode.EDIT;
-  }
-
-  #removePopup = () => {
-    remove(this.#popupComponent);
-    document.body.classList.remove('hide-overflow');
-    this.#mode = Mode.DEFAULT;
+    this.mode = Mode.EDIT;
   }
 
   #handleViewAction = async (actionType, update) => {
@@ -156,11 +157,7 @@ export default class FilmPresenter {
   }
 
   #setPopupHandlers = () => {
-    this.#popupComponent.setCloseClickHandler(() => {
-      this.#removePopup();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    });
-
+    this.#popupComponent.setCloseClickHandler(this.removePopup);
     this.#popupComponent.setIsInWatchlistClickHandler(this.#handleIsInWatchlistClick);
     this.#popupComponent.setIsAlreadyWatchedClickHandler(this.#handleIsAlreadyWatchedClick);
     this.#popupComponent.setIsFavoritesClickHandler(this.#handleIsFavoritesClick);
@@ -183,8 +180,8 @@ export default class FilmPresenter {
       this.#filterType !== FilterType.WATCHLIST ? UpdateType.PATCH : UpdateType.MINOR,
       updated);
 
-    if (this.#filterType === FilterType.WATCHLIST && this.#mode === Mode.EDIT) {
-      this.#removePopup();
+    if (this.#filterType === FilterType.WATCHLIST && this.mode === Mode.EDIT) {
+      this.removePopup();
     }
   }
 
@@ -201,8 +198,8 @@ export default class FilmPresenter {
       this.#filterType !== FilterType.HISTORY ? UpdateType.PATCH : UpdateType.MINOR,
       updated);
 
-    if (this.#filterType === FilterType.HISTORY && this.#mode === Mode.EDIT) {
-      this.#removePopup();
+    if (this.#filterType === FilterType.HISTORY && this.mode === Mode.EDIT) {
+      this.removePopup();
     }
 
     this.#changeWatchedData();
@@ -218,16 +215,16 @@ export default class FilmPresenter {
       this.#filterType !== FilterType.FAVORITES ? UpdateType.PATCH : UpdateType.MINOR,
       updated);
 
-    if (this.#filterType === FilterType.FAVORITES && this.#mode === Mode.EDIT) {
-      this.#removePopup();
+    if (this.#filterType === FilterType.FAVORITES && this.mode === Mode.EDIT) {
+      this.removePopup();
     }
   }
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === ESCAPE || evt.key === ESC) {
       evt.preventDefault();
-      this.#removePopup();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.removePopup();
+      // document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
 }

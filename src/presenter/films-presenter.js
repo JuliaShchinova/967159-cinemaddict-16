@@ -9,7 +9,7 @@ import LoadingView from '../view/loading-view';
 import ProfileView from '../view/profile-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import SortView from '../view/sort-view';
-import FilmPresenter from './film-presenter';
+import FilmPresenter, { Mode } from './film-presenter';
 
 const CARD_COUNT_PER_STEP = 5;
 
@@ -223,9 +223,30 @@ export default class FilmsPresenter {
       this.#filmCommentedPresenter].forEach((presenter) => this.#initFilmPresenter(presenter, updatedFilm));
   }
 
+  #checkOpenPopup = (presenter) => {
+    const editingPopup = Array.from(presenter.values()).find((film) => film.mode === Mode.EDIT);
+
+    return editingPopup;
+  }
+
   #handleOpenPopup = (checkBodyClass = false) => {
     if (document.body.querySelector('.film-details')) {
-      document.body.querySelector('.film-details').remove();
+
+      let editingPopup;
+
+      if (this.#checkOpenPopup(this.#filmPresenter)) {
+        editingPopup = this.#checkOpenPopup(this.#filmPresenter);
+      } else if (this.#checkOpenPopup(this.#filmRatedPresenter)) {
+        editingPopup = this.#checkOpenPopup(this.#filmRatedPresenter);
+      } else if (this.#checkOpenPopup(this.#filmCommentedPresenter)) {
+        editingPopup = this.#checkOpenPopup(this.#filmCommentedPresenter);
+      }
+
+      if (editingPopup) {
+        editingPopup.removePopup();
+      } else {
+        document.body.querySelector('.film-details').remove();
+      }
     }
 
     if (checkBodyClass && document.body.classList.contains('hide-overflow')) {

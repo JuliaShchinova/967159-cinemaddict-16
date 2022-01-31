@@ -34,13 +34,9 @@ const getGenres = (films) => {
     film.filmInfo.genre.forEach((genre) => {
       if (genre in genresMap) {
         genresMap[genre] ++;
-      } else {
-        genresMap[genre] = 1;
+        return;
       }
-
-      // (genre in genresMap) ? genresMap[genre]++ : genresMap[genre] = 1;
-
-      // genresMap[genre] = (genre in genresMap) ? genresMap[genre] ++ : 1;
+      genresMap[genre] = 1;
     });
   });
 
