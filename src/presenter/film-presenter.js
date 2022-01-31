@@ -224,7 +224,6 @@ export default class FilmPresenter {
     if (evt.key === ESCAPE || evt.key === ESC) {
       evt.preventDefault();
       this.removePopup();
-      // document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   }
 }
