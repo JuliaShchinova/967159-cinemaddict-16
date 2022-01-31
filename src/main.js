@@ -1,36 +1,55 @@
-import { CARD_COUNT, COMMENT_COUNT } from './utils/const';
-import { generateCommentInfo } from './mock/comment';
-import { generateFilmInfo } from './mock/film';
-import { generateFilter } from './mock/filter';
-import { render, RenderPosition } from './utils/render';
+import { AUTHORIZATION, END_POINT, MenuItem } from './utils/const';
+import { remove, render, RenderPosition } from './utils/render';
 import FooterStatisticView from './view/footer-statistic-view';
-import MainNavView from './view/main-nav-view';
-import ProfileView from './view/profile-view';
 import FilmsPresenter from './presenter/films-presenter';
-
-const comments = Array.from({length: COMMENT_COUNT}, generateCommentInfo);
-const films = [];
-
-for (let i = 0; i < CARD_COUNT; i++) {
-  const film = generateFilmInfo(comments);
-  films.push(film);
-}
-
-const filters = generateFilter(films);
+import FilmsModel from './model/films-model';
+import FilterModel from './model/filter-model';
+import FilterPresenter from './presenter/filter-presenter';
+import StatisticView from './view/statistic-view';
+import ApiService from './api-service';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
-
-render(siteMainElement, new MainNavView(filters), RenderPosition.BEFOREEND);
-
-if (films.length !== 0) {
-  const profileComponent = new ProfileView(films.length);
-  render(siteHeaderElement, profileComponent, RenderPosition.BEFOREEND);
-}
-
-const filmsPresenter = new FilmsPresenter(siteMainElement);
-filmsPresenter.init(films, comments);
-
 const footerStatisticElement = document.querySelector('.footer__statistics');
-const footerStatisticComponent = new FooterStatisticView(films.length);
+
+const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));
+const filterModel = new FilterModel();
+
+const filmsPresenter = new FilmsPresenter(siteHeaderElement, siteMainElement, filmsModel, filterModel);
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
+
+let statisticsComponent = null;
+
+const footerStatisticComponent = new FooterStatisticView(filmsModel.films.length);
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
+      filterPresenter.init(handleSiteMenuClick);
+      filterPresenter.setMenuHandlers();
+
+      if (!siteMainElement.querySelector('.films')) {
+        filmsPresenter.init();
+      }
+
+      remove(statisticsComponent);
+      break;
+    case MenuItem.STATS:
+      filterPresenter.init(handleSiteMenuClick, MenuItem.STATS);
+      filterPresenter.setMenuHandlers();
+      filmsPresenter.destroy();
+      statisticsComponent = new StatisticView(filmsModel.films);
+      render(siteMainElement, statisticsComponent, RenderPosition.BEFOREEND);
+      break;
+  }
+};
+
 render(footerStatisticElement, footerStatisticComponent, RenderPosition.BEFOREEND);
+
+filterPresenter.init(handleSiteMenuClick);
+filmsPresenter.init();
+filmsModel.init().finally(() => {
+  filterPresenter.setMenuHandlers();
+  remove(footerStatisticComponent);
+  render(footerStatisticElement, new FooterStatisticView(filmsModel.films.length), RenderPosition.BEFOREEND);
+});

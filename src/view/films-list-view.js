@@ -2,24 +2,24 @@ import { addClass } from '../utils/utils';
 import AbstractView from './abstract-view';
 
 const createFilmsListTemplate = (header) => {
-  let h2;
+  let headerText;
   const addFilmsListExtraClass = addClass('films-list--extra');
   const addTitleHiddenClass = addClass('visually-hidden');
 
   switch (header) {
     case 'topRated':
-      h2 = 'Top rated';
+      headerText = 'Top rated';
       break;
     case 'mostCommented':
-      h2 = 'Most commented';
+      headerText = 'Most commented';
       break;
     default:
-      h2 = 'All movies. Upcoming';
+      headerText = 'All movies. Upcoming';
       break;
   }
 
   return `<section class="films-list ${addFilmsListExtraClass(header)}">
-    <h2 class="films-list__title ${addTitleHiddenClass(!header)}">${h2}</h2>
+    <h2 class="films-list__title ${addTitleHiddenClass(!header)}">${headerText}</h2>
     <div class="films-list__container">
     </div>
   </section>`;

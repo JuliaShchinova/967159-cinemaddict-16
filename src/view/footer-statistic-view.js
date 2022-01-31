@@ -6,7 +6,7 @@ const createFooterStatisticTemplate = (count) => `<p>
 export default class FooterStatisticView extends AbstractView {
   #count = null;
 
-  constructor(count) {
+  constructor (count) {
     super();
     this.#count = count;
   }

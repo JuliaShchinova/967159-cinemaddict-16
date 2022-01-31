@@ -1,3 +1,5 @@
+import { State } from '../presenter/film-presenter';
+import { UserAction } from '../utils/const';
 import { getDurationTime, getFormatDate } from '../utils/date';
 import { render, RenderPosition } from '../utils/render';
 import { addClass } from '../utils/utils';
@@ -6,7 +8,20 @@ import AddCommentView from './add-comment-view';
 import CommentView from './comment-view';
 
 const createPopupTemplate = (film = {}) => {
-  const {title, alternativeTitle, totalRating, ageRating, poster, director, writers, actors, comments, release, description, runtime, genres, userDetails} = film;
+  const {filmInfo, comments, userDetails} = film;
+
+  const {title,
+    alternativeTitle,
+    ageRating,
+    totalRating,
+    poster,
+    director,
+    writers,
+    actors,
+    release,
+    description,
+    runtime,
+    genre: genres} = filmInfo;
 
   const genresTitle = genres.length > 1 ? 'Genres' : 'Genre';
 
@@ -94,18 +109,20 @@ const createPopupTemplate = (film = {}) => {
 
 export default class PopupView extends AbstractView {
   #film = null;
-  #filmComments = [];
+  #filmComments = new Map();
   #container = null;
+  #changeCommentData = null;
+  #addCommentComponent = new AddCommentView();
 
-  constructor (film, filmComments) {
+  constructor (film, changeCommentData) {
     super();
 
     this.#film = film;
-    this.#filmComments = [...filmComments];
+    this.#changeCommentData = changeCommentData;
   }
 
   get template() {
-    return createPopupTemplate(this.#film, this.#filmComments);
+    return createPopupTemplate(this.#film);
   }
 
   get container () {
@@ -114,9 +131,36 @@ export default class PopupView extends AbstractView {
     return this.#container;
   }
 
-  renderCommentInfo = () => {
-    this.#renderComments();
+  renderCommentInfo = (comments) => {
+    if (this.#filmComments.size !== 0) {
+      this.#filmComments.clear();
+    }
+    this.#renderComments(comments);
     this.#renderAddComment();
+  }
+
+  updateData = (state, id) => {
+    switch (state) {
+      case State.SAVING:
+        this.#addCommentComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#filmComments.get(id).updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        if (!id) {
+          this.#setCommentAborting(id);
+        } else {
+          this.#setAddCommentAborting();
+        }
+        break;
+    }
   }
 
   setCloseClickHandler = (callback) => {
@@ -139,6 +183,42 @@ export default class PopupView extends AbstractView {
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#isFavoritesClickHandler);
   }
 
+  #renderComments = (comments = []) => {
+    for (const comment of comments) {
+      const commentComponent = new CommentView(comment);
+      commentComponent.setDeleteClickHandler(this.#handleDeleteCommentClick);
+      render(this.container, commentComponent, RenderPosition.BEFOREEND);
+      this.#filmComments.set(comment.id, commentComponent);
+    }
+  }
+
+  #renderAddComment = () => {
+    this.#addCommentComponent.setFormKeydownHandler(this.#addCommentKeydownHandler);
+    render(this.container, this.#addCommentComponent, RenderPosition.AFTEREND);
+  }
+
+  #setAddCommentAborting = () => {
+    const resetFormState = () => {
+      this.#addCommentComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
+
+    this.#addCommentComponent.shake(resetFormState);
+  }
+
+  #setCommentAborting = (id) => {
+    const resetFormState = () => {
+      this.#filmComments.get(id).updateData({
+        isDisabled: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#filmComments.get(id).shake(resetFormState);
+  }
+
   #closeClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.closeClick();
@@ -159,14 +239,11 @@ export default class PopupView extends AbstractView {
     this._callback.favoritesClick();
   }
 
-  #renderComments = () => {
-    for (const id of this.#film.comments) {
-      const comment = this.#filmComments.find((item) => id === item.id);
-      render(this.container, new CommentView(comment), RenderPosition.BEFOREEND);
-    }
+  #handleDeleteCommentClick = (update) => {
+    this.#changeCommentData(UserAction.DELETE_COMMENT, update);
   }
 
-  #renderAddComment = () => {
-    render(this.container, new AddCommentView(this.#film), RenderPosition.AFTEREND);
+  #addCommentKeydownHandler = (update) => {
+    this.#changeCommentData(UserAction.ADD_COMMENT, update);
   }
 }

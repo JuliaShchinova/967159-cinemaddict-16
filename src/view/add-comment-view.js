@@ -1,41 +1,47 @@
-import { EMOTIONS, ENTER } from '../utils/const';
 import SmartView from './smart-view';
 
-const addCommentTemplate = (data) => (
-  `<div class="film-details__new-comment">
+const ENTER = 'Enter';
+const EMOTIONS = ['smile', 'sleeping', 'puke', 'angry'];
+
+const addCommentTemplate = (data) => {
+  const {
+    emoji,
+    text,
+    emojiChecked,
+    isDisabled,
+  } = data;
+
+  return `<div class="film-details__new-comment">
     <div class="film-details__add-emoji-label">
-      ${data.emoji !== null ? `<img src="images/emoji/${data.emoji}.png" width="55" height="55" alt="emoji-${data.emoji}"></img>` : '' }
+      ${emoji !== null ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}"></img>` : '' }
     </div>
 
     <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${data.comment}</textarea>
+      <textarea ${isDisabled ? 'disabled' : ''} class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text}</textarea>
     </label>
 
     <div class="film-details__emoji-list">
-      ${EMOTIONS.map((emoji) => `
+      ${EMOTIONS.map((emotion) => `
         <input class="film-details__emoji-item visually-hidden"
+        ${isDisabled ? 'disabled' : ''}
         name="comment-emoji"
         type="radio"
-        id="emoji-${emoji}"
-        value="${emoji}"
-        ${data.emojiChecked === `emoji-${emoji}` ? 'checked' : ''}>
-        <label class="film-details__emoji-label" for="emoji-${emoji}">
-          <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
+        id="emoji-${emotion}"
+        value="${emotion}"
+        ${emojiChecked === `emoji-${emotion}` ? 'checked' : ''}>
+        <label class="film-details__emoji-label" for="emoji-${emotion}">
+          <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji">
         </label>
       `).join('')}
     </div>
-  </div>`
-);
+  </div>`;
+};
 
 export default class AddCommentView extends SmartView {
-  #film = null;
-  #commentInput = null;
-
-  constructor (film) {
+  constructor () {
     super();
 
-    this._data = AddCommentView.parseFilmToData(film);
-    this.setFormSubmitHandler(this.#commentSubmit);//
+    this._data = AddCommentView.parseFilmToData();
     this.#setInnerHandlers();
   }
 
@@ -44,24 +50,19 @@ export default class AddCommentView extends SmartView {
   }
 
   restoreHandlers = () => {
-    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormKeydownHandler(this._callback.formSubmit);
     this.#setInnerHandlers();
   }
 
-  setFormSubmitHandler = (callback) => {
+  setFormKeydownHandler = (callback) => {
     this._callback.formSubmit = callback;
-    this.#commentInput = this.element.querySelector('.film-details__comment-input');
-    this.#commentInput.addEventListener('keydown', this.#formSubmitHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#formKeydownHandler);
   }
 
-  // reset = (film) => {
-  //   this.updateData(AddCommentView.parseFilmToData(film));
-  // }
-
-  #formSubmitHandler = (evt) => {
+  #formKeydownHandler = (evt) => {
     if (evt.key === ENTER && (evt.metaKey === true || evt.ctrlKey === true)) {
 
-      if (!this._data.emoji || !this._data.comment) {
+      if (!this._data.emoji || !this._data.text) {
         return;
       }
 
@@ -85,32 +86,34 @@ export default class AddCommentView extends SmartView {
 
   #commentInputHandler = (evt) => {
     this.updateData({
-      comment: evt.target.value,
+      text: evt.target.value,
     }, true);
   }
 
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emojiChangeHandler);
-    this.#commentInput.addEventListener('input', this.#commentInputHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   }
 
-  #commentSubmit = () => {
-    this.#commentInput.disabled = true;
-  }//
+  static parseFilmToData = () => {
+    const data = {};
 
-  static parseFilmToData = (film) => ({...film,
-    emoji: null,
-    comment: '',
-    emojiChecked: ''
-  });
+    return {...data,
+      emoji: null,
+      text: '',
+      emojiChecked: '',
+      isDisabled: false,
+      isSaving: false,
+    };
+  }
 
   static parseDataToFilm = (data) => {
-    const film = {...data};
+    const comment = {...data};
 
-    delete film.emoji;
-    delete film.comment;
-    delete film.emojiChecked;
+    delete comment.emojiChecked;
+    delete comment.isDisabled;
+    delete comment.isSaving;
 
-    return film;
+    return comment;
   }
 }
