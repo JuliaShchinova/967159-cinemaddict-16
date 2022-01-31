@@ -16,5 +16,5 @@ export {
   addClass,
   getUserRank,
   sortByDate,
-  sortByRating,
+  sortByRating
 };

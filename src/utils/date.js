@@ -18,5 +18,5 @@ const getRelativeTimeFormat = (date) => dayjs(date).fromNow();
 export {
   getFormatDate,
   getDurationTime,
-  getRelativeTimeFormat,
+  getRelativeTimeFormat
 };

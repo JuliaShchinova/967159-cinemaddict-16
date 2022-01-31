@@ -69,5 +69,5 @@ export {
   render,
   createElement,
   remove,
-  replace,
+  replace
 };

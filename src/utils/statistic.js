@@ -58,5 +58,5 @@ export {
   statisticFilter,
   getTotalDuration,
   getGenres,
-  getTopGenre,
+  getTopGenre
 };

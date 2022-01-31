@@ -11,7 +11,7 @@ const UserAction = {
   UPDATE_STATS: 'UPDATE_STATS',
   ADD_COMMENT: 'ADD',
   DELETE_COMMENT: 'DELETE',
-  INIT_COMMENTS: 'INIT_COMMENTS'
+  INIT_COMMENTS: 'INIT_COMMENTS',
 };
 
 const UpdateType = {
@@ -19,7 +19,7 @@ const UpdateType = {
   PART: 'PART',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
 };
 
 const FilterType = {
@@ -37,20 +37,20 @@ const MenuItem = {
 const userRank = {
   'None': {
     MIN: 0,
-    MAX: 0
+    MAX: 0,
   },
   'Novice': {
     MIN: 1,
-    MAX: 10
+    MAX: 10,
   },
   'Fan': {
     MIN: 11,
-    MAX: 20
+    MAX: 20,
   },
   'Movie Buff': {
     MIN: 21,
-    MAX: Infinity
-  }
+    MAX: Infinity,
+  },
 };
 
 const StatisticsType = {
@@ -70,5 +70,5 @@ export {
   FilterType,
   MenuItem,
   userRank,
-  StatisticsType,
+  StatisticsType
 };
