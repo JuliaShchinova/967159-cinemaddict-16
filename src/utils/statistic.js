@@ -21,11 +21,7 @@ const statisticFilter = {
   [StatisticsType.YEAR]: (films) => films.filter((film) => dayjs(film.userDetails.watchingDate).isBetween(DateForCompare.YEAR, DateForCompare.TODAY, 'year', '[]')),
 };
 
-const getTotalDuration = (films) => {
-  const totalDuration = films.map((film) => film.filmInfo.runtime).reduce((sum, current) => sum + current, 0);
-
-  return totalDuration;
-};
+const getTotalDuration = (films) => films.map((film) => film.filmInfo.runtime).reduce((sum, current) => sum + current, 0);
 
 const getGenres = (films) => {
   const genresMap = {};

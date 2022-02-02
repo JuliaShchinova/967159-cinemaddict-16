@@ -154,7 +154,7 @@ export default class PopupView extends AbstractView {
         });
         break;
       case State.ABORTING:
-        if (!id) {
+        if (id !== null) {
           this.#setCommentAborting(id);
         } else {
           this.#setAddCommentAborting();

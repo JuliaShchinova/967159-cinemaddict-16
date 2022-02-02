@@ -24,7 +24,6 @@ export default class FilmPresenter {
   #changeData = null;
   #closePopup = null;
   #filterType = null;
-  #changeWatchedData = null;
 
   #filmComponent = null;
   #popupComponent = null;
@@ -32,12 +31,11 @@ export default class FilmPresenter {
   #film = null;
   #commentsModel = null;
 
-  constructor (filmListContainer, changeData, closePopup, filterType, changeWatchedData) {
+  constructor (filmListContainer, changeData, closePopup, filterType) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
     this.#closePopup = closePopup;
     this.#filterType = filterType;
-    this.#changeWatchedData = changeWatchedData;
 
     this.mode = Mode.DEFAULT;
 
@@ -201,8 +199,6 @@ export default class FilmPresenter {
     if (this.#filterType === FilterType.HISTORY && this.mode === Mode.EDIT) {
       this.removePopup();
     }
-
-    this.#changeWatchedData();
   }
 
   #handleIsFavoritesClick = () => {

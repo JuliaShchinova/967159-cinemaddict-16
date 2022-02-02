@@ -39,6 +39,7 @@ export default class FilmsPresenter {
   #filterType = FilterType.ALL;
 
   #isLoading =  true;
+  #historyLength = null;
 
   constructor (profileContainer, filmsContainer, filmsModel, filterModel) {
     this.#profileContainer = profileContainer;
@@ -98,7 +99,7 @@ export default class FilmsPresenter {
   #renderFilm = (filmListElement, film, filmMap) => {
     const container = filmListElement.container ? filmListElement.container : filmListElement;
 
-    const filmPresenter = new FilmPresenter(container, this.#handleViewAction, this.#handleOpenPopup, this.#filterType, this.#renderProfileComponent);
+    const filmPresenter = new FilmPresenter(container, this.#handleViewAction, this.#handleOpenPopup, this.#filterType);
     filmPresenter.init(film);
 
     filmMap.set(film.id, filmPresenter);
@@ -270,6 +271,7 @@ export default class FilmsPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_STATS:
+        this.#historyLength = this.watchedFilms.length;
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
@@ -307,6 +309,10 @@ export default class FilmsPresenter {
         remove(this.#loadingComponent);
         this.#renderBoard();
         break;
+    }
+
+    if (this.#historyLength !== null && this.#historyLength !== this.watchedFilms.length) {
+      this.#renderProfileComponent();
     }
   }
 

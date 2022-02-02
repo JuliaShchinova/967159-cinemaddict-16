@@ -8,9 +8,10 @@ dayjs.extend(relativeTime);
 const getFormatDate = (date, format) => dayjs(date).format(format);
 
 const getDurationTime = (time, type) => {
-  const { hours, minutes } = dayjs.duration(time, type).$d;
+  const HOURS_IN_DAY = 24;
+  const { days, hours, minutes } = dayjs.duration(time, type).$d;
 
-  return `${hours}h ${minutes}m`;
+  return `${(days * HOURS_IN_DAY + hours)}h ${minutes}m`;
 };
 
 const getRelativeTimeFormat = (date) => dayjs(date).fromNow();

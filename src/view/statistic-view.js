@@ -113,7 +113,7 @@ const createStatiisticTemplate = (watchedFilms, filteredFilms, filters, currentF
 
   const rank = getUserRank(watchedFilms.length, userRank);
   const totalDuration = getDurationTime(getTotalDuration(filteredFilms), 'minute');
-  const [hour, minute] = totalDuration.split(' ');
+  const [ hour, minute] = totalDuration.split(' ');
   const genre = getTopGenre(filteredFilms);
 
   return `<section class="statistic">
